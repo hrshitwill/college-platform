@@ -1,11 +1,13 @@
 'use client';
+import { Suspense } from 'react';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 
-export default function Compare() {
+// separate component that uses useSearchParams
+function CompareContent() {
     const searchParams = useSearchParams();
     const [colleges,  setColleges]  = useState([]);
     const [loading,   setLoading]   = useState(false);
@@ -30,20 +32,19 @@ export default function Compare() {
     };
 
     const fields = [
-        { label: '📍 Location',   key: 'location' },
-        { label: '🏛️ State',      key: 'state' },
-        { label: '🏷️ Type',       key: 'type' },
-        { label: '📅 Established',key: 'established' },
-        { label: '⭐ Rating',     key: 'rating' },
-        { label: '🎯 Placement',  key: 'placement',
+        { label: '📍 Location',    key: 'location' },
+        { label: '🏛️ State',       key: 'state' },
+        { label: '🏷️ Type',        key: 'type' },
+        { label: '📅 Established', key: 'established' },
+        { label: '⭐ Rating',      key: 'rating' },
+        { label: '🎯 Placement',   key: 'placement',
           format: v => `${v}%` },
-        { label: '💰 Min Fees',   key: 'fees_min',
+        { label: '💰 Min Fees',    key: 'fees_min',
           format: v => `₹${(v/100000).toFixed(1)}L/yr` },
-        { label: '💰 Max Fees',   key: 'fees_max',
+        { label: '💰 Max Fees',    key: 'fees_max',
           format: v => `₹${(v/100000).toFixed(1)}L/yr` },
     ];
 
-    // highlight best value
     const getBest = (key) => {
         if (!colleges.length) return null;
         if (key === 'rating' || key === 'placement')
@@ -54,11 +55,7 @@ export default function Compare() {
     };
 
     return (
-        <>
-        <Navbar />
         <main className="max-w-6xl mx-auto px-6 py-8">
-
-            {/* Header */}
             <div className="mb-8">
                 <Link href="/"
                       className="text-blue-600 text-sm hover:underline">
@@ -95,8 +92,6 @@ export default function Compare() {
                 <div className="bg-white rounded-2xl shadow-sm
                                 border border-gray-100 overflow-hidden">
                     <table className="w-full">
-
-                        {/* College Names Header */}
                         <thead>
                             <tr className="border-b">
                                 <th className="p-6 text-left bg-gray-50
@@ -104,8 +99,7 @@ export default function Compare() {
                                     Feature
                                 </th>
                                 {colleges.map(c => (
-                                    <th key={c.id}
-                                        className="p-6 text-left">
+                                    <th key={c.id} className="p-6 text-left">
                                         <div className="bg-gradient-to-r
                                                         from-blue-500 to-indigo-600
                                                         rounded-xl p-4 text-white">
@@ -120,16 +114,13 @@ export default function Compare() {
                                 ))}
                             </tr>
                         </thead>
-
-                        {/* Comparison Rows */}
                         <tbody>
                             {fields.map((field, i) => {
                                 const best = getBest(field.key);
                                 return (
                                     <tr key={field.label}
                                         className={i % 2 === 0
-                                            ? 'bg-white'
-                                            : 'bg-gray-50'}>
+                                            ? 'bg-white' : 'bg-gray-50'}>
                                         <td className="p-4 font-medium
                                                        text-gray-600 text-sm">
                                             {field.label}
@@ -139,14 +130,11 @@ export default function Compare() {
                                             const isBest = best !== null
                                                 && val === best;
                                             return (
-                                                <td key={c.id}
-                                                    className="p-4">
-                                                    <span className={`
-                                                        font-medium
+                                                <td key={c.id} className="p-4">
+                                                    <span className={`font-medium
                                                         ${isBest
                                                             ? 'text-green-600 font-bold'
-                                                            : 'text-gray-700'}
-                                                    `}>
+                                                            : 'text-gray-700'}`}>
                                                         {field.format
                                                             ? field.format(val)
                                                             : val}
@@ -171,6 +159,21 @@ export default function Compare() {
                 </div>
             )}
         </main>
+    );
+}
+
+// ✅ wrap in Suspense!
+export default function Compare() {
+    return (
+        <>
+        <Navbar />
+        <Suspense fallback={
+            <div className="text-center py-20 text-gray-400">
+                Loading...
+            </div>
+        }>
+            <CompareContent />
+        </Suspense>
         </>
     );
 }
