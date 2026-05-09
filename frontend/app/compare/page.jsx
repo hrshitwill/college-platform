@@ -1,12 +1,12 @@
 'use client';
 import { Suspense } from 'react';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import axios from 'axios';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 
-// separate component that uses useSearchParams
 function CompareContent() {
     const searchParams = useSearchParams();
     const [colleges,  setColleges]  = useState([]);
@@ -162,18 +162,19 @@ function CompareContent() {
     );
 }
 
-// ✅ wrap in Suspense!
 export default function Compare() {
     return (
-        <>
-        <Navbar />
-        <Suspense fallback={
-            <div className="text-center py-20 text-gray-400">
-                Loading...
-            </div>
-        }>
-            <CompareContent />
-        </Suspense>
-        </>
+        <ProtectedRoute>
+            <>
+            <Navbar />
+            <Suspense fallback={
+                <div className="text-center py-20 text-gray-400">
+                    Loading...
+                </div>
+            }>
+                <CompareContent />
+            </Suspense>
+            </>
+        </ProtectedRoute>
     );
 }

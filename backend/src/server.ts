@@ -3,6 +3,8 @@ import cors      from 'cors';
 import dotenv    from 'dotenv';
 import colleges  from './routes/colleges';
 import predictor from './routes/predictor';
+import auth from './routes/auth';
+import savedColleges from './routes/savedColleges';
 
 dotenv.config();
 
@@ -10,6 +12,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use('/api/auth', auth);
+app.use('/api/saved-colleges', savedColleges);
 
 // routes
 app.use('/api/colleges',  colleges);

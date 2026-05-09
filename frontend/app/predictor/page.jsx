@@ -1,10 +1,11 @@
 'use client';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { useState } from 'react';
 import axios from 'axios';
 import Navbar from '@/components/Navbar';
 import Link from 'next/link';
 
-export default function Predictor() {
+function PredictorContent() {
     const [exam,     setExam]     = useState('JEE');
     const [rank,     setRank]     = useState('');
     const [colleges, setColleges] = useState([]);
@@ -28,11 +29,7 @@ export default function Predictor() {
     };
 
     return (
-        <>
-        <Navbar />
         <main className="max-w-3xl mx-auto px-6 py-8">
-
-            {/* Header */}
             <div className="text-center mb-10">
                 <h1 className="text-4xl font-bold mb-3">
                     College Predictor 🧠
@@ -43,11 +40,8 @@ export default function Predictor() {
                 </p>
             </div>
 
-            {/* Input Card */}
             <div className="bg-white rounded-2xl shadow-sm
                             border border-gray-100 p-8 mb-8">
-
-                {/* Exam Select */}
                 <div className="mb-6">
                     <label className="block text-sm font-medium
                                       text-gray-700 mb-2">
@@ -70,7 +64,6 @@ export default function Predictor() {
                     </div>
                 </div>
 
-                {/* Rank Input */}
                 <div className="mb-6">
                     <label className="block text-sm font-medium
                                       text-gray-700 mb-2">
@@ -88,7 +81,6 @@ export default function Predictor() {
                     />
                 </div>
 
-                {/* Predict Button */}
                 <button
                     onClick={predict}
                     disabled={!rank || loading}
@@ -100,7 +92,6 @@ export default function Predictor() {
                 </button>
             </div>
 
-            {/* Results */}
             {searched && !loading && (
                 <>
                 {colleges.length === 0 ? (
@@ -136,7 +127,6 @@ export default function Predictor() {
                                             items-center hover:shadow-md
                                             transition">
                                 <div className="flex items-center gap-4">
-                                    {/* Rank Number */}
                                     <div className="w-10 h-10 bg-blue-100
                                                     text-blue-600 rounded-full
                                                     flex items-center
@@ -151,7 +141,6 @@ export default function Predictor() {
                                         <p className="text-gray-500 text-sm">
                                             📍 {college.location}
                                         </p>
-                                        {/* Rank Range */}
                                         <p className="text-green-600
                                                       text-xs mt-1 font-medium">
                                             ✅ Rank Range: {college.rank_min?.toLocaleString()}
@@ -161,7 +150,6 @@ export default function Predictor() {
                                     </div>
                                 </div>
 
-                                {/* Right Side */}
                                 <div className="text-right">
                                     <div className="flex gap-3 mb-3
                                                     justify-end text-sm">
@@ -193,6 +181,16 @@ export default function Predictor() {
                 </>
             )}
         </main>
-        </>
+    );
+}
+
+export default function Predictor() {
+    return (
+        <ProtectedRoute>
+            <>
+            <Navbar />
+            <PredictorContent />
+            </>
+        </ProtectedRoute>
     );
 }
