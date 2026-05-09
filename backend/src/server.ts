@@ -11,12 +11,22 @@ dotenv.config();
 const app = express();
 
 // CORS configuration
+const allowedOrigins = [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'https://college-platform-xi.vercel.app',
+    process.env.FRONTEND_URL,
+].filter(Boolean) as string[];
+
 const corsOptions = {
-    origin: [
-        'http://localhost:3000',
-        'https://college-platform.vercel.app',
-        process.env.FRONTEND_URL
-    ],
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+        // Allow requests with no origin (e.g. mobile apps, curl)
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error(`CORS: origin '${origin}' not allowed`));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
