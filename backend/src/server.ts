@@ -10,7 +10,19 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+// CORS configuration
+const corsOptions = {
+    origin: [
+        'http://localhost:3000',
+        'https://college-platform.vercel.app',
+        process.env.FRONTEND_URL
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/api/auth', auth);
 app.use('/api/saved-colleges', savedColleges);
